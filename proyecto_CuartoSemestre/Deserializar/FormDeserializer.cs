@@ -10,35 +10,27 @@ namespace proyecto_CuartoSemestre.Deserializar
     public partial class FormDeserializer : Form
     {
         public FormDeserializer()
-        {
-            InitializeComponent();
-        }
+        { InitializeComponent(); }
 
         private void button1_Click(object sender, EventArgs e)
         {
             string inicio = dtpInicio.Value.Year.ToString() + "-" + dtpInicio.Value.Month.ToString() + "-" + dtpInicio.Value.Day.ToString();
             string final = dtpFin.Value.Year.ToString() + "-" + dtpFin.Value.Month.ToString() + "-" + dtpFin.Value.Day.ToString();
-            string url = "https://www.banxico.org.mx/SieAPIRest/service/v1/series/SF43718/datos/" + inicio + "/" + final;
+            string url = "https://www.banxico.org.mx/SieAPIRest/service/v1/series/SF63528/datos/" + inicio + "/" + final;
             Response response = read(url);
             Serie serie = response.seriesResponse.series[0];
-            lbSerie.Text = "Serie: " + serie.Title;
             StreamWriter sw = new StreamWriter("StreamReader.txt");
 
-
-            double[,] datosGrafica = new double[2, serie.Data.GetLength(0)];
             if(serie.Data == null)
             {
                 MessageBox.Show("Elija otra fecha por favor, o una fecha mas extensa");
                 return;
             }
-            int i = 0;
             foreach (DataSerie dataSerie in serie.Data)
             {
                 if (dataSerie.Data.Equals("N/E")) continue;
                 sw.WriteLine("Fecha: " + dataSerie.Date);
                 sw.WriteLine("Precio: " + dataSerie.Data);
-                //double precio = double.Parse(dataSerie.Data);
-                //DateTime fecha = DateTime.Parse(dataSerie.Date);
                 chart1.Series[0].Points.AddXY(dataSerie.Date, dataSerie.Data);
             }
             
@@ -52,7 +44,6 @@ namespace proyecto_CuartoSemestre.Deserializar
         {
             try
             {
-                //string url = "https://www.banxico.org.mx/SieAPIRest/service/v1/series/SF43718/datos/2023-01-31/2023-01-31";
                 HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
                 request.Accept = "application/json";
                 request.Headers["Bmx-Token"] = "69260904c3e398685c78e54928e7129fb21c7f79443e3c8b59e5c91f8319ef47";
@@ -68,9 +59,7 @@ namespace proyecto_CuartoSemestre.Deserializar
                 return jsonResponse;
             }
             catch (Exception e)
-            {
-                MessageBox.Show(e.Message);
-            }
+            { MessageBox.Show(e.Message); }
             return null;
         }
     }

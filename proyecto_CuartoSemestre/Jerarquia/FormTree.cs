@@ -1,12 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace proyecto_CuartoSemestre.Jerarquia
@@ -23,44 +17,44 @@ namespace proyecto_CuartoSemestre.Jerarquia
             if (ofd.ShowDialog() != DialogResult.OK) { return; }
             filltree(ofd.FileName);
         }
-        private void LlenarArbol(StreamReader sr)
-        {
-            string renglon;
-            string x = "";
-            TreeNode ciudad = new TreeNode();
-            TreeNode estado = new TreeNode();
-            TreeNode codigoPostal = new TreeNode();
-            TreeNode colonia = new TreeNode();
+        //private void LlenarArbol(StreamReader sr)
+        //{
+        //    string renglon;
+        //    string x = "";
+        //    TreeNode ciudad = new TreeNode();
+        //    TreeNode estado = new TreeNode();
+        //    TreeNode codigoPostal = new TreeNode();
+        //    TreeNode colonia = new TreeNode();
             
-            while ((renglon = sr.ReadLine()) != null)
-            {
-                string[] datos = renglon.Split('|');
-                if (colonia.Text != datos[1] && x != "")
-                {
-                    if (codigoPostal.Text != datos[0] && ciudad.Text != "")
-                    {
-                        if (ciudad.Text != datos[5] && ciudad.Text != "")
-                        {
-                            if (estado.Text != datos[4] && estado.Text != "")
-                            {
-                                treeView1.Nodes.Add(estado.Text);
-                                estado = new TreeNode();
+        //    while ((renglon = sr.ReadLine()) != null)
+        //    {
+        //        string[] datos = renglon.Split('|');
+        //        if (colonia.Text != datos[1] && x != "")
+        //        {
+        //            if (codigoPostal.Text != datos[0] && ciudad.Text != "")
+        //            {
+        //                if (ciudad.Text != datos[5] && ciudad.Text != "")
+        //                {
+        //                    if (estado.Text != datos[4] && estado.Text != "")
+        //                    {
+        //                        treeView1.Nodes.Add(estado.Text);
+        //                        estado = new TreeNode();
 
-                            }
-                        }
-                        estado.Text = datos[5];
-                        estado.Nodes.Add(ciudad);
-                        ciudad = new TreeNode();
-                    }
-                    ciudad.Text = datos[1];
-                    codigoPostal.Nodes.Add(ciudad);
-                    codigoPostal = new TreeNode();
-                }
-                codigoPostal.Text = datos[5];
-                codigoPostal.Nodes.Add(codigoPostal);
-                colonia.Text = datos[0];
-            }
-        }
+        //                    }
+        //                }
+        //                estado.Text = datos[5];
+        //                estado.Nodes.Add(ciudad);
+        //                ciudad = new TreeNode();
+        //            }
+        //            ciudad.Text = datos[1];
+        //            codigoPostal.Nodes.Add(ciudad);
+        //            codigoPostal = new TreeNode();
+        //        }
+        //        codigoPostal.Text = datos[5];
+        //        codigoPostal.Nodes.Add(codigoPostal);
+        //        colonia.Text = datos[0];
+        //    }
+        //}
         private void filltree(string filename)
         {
             // Crear un diccionario para almacenar los códigos postales y las colonias correspondientes
@@ -84,7 +78,8 @@ namespace proyecto_CuartoSemestre.Jerarquia
                 // Verificar si el código postal ya está en el diccionario
                 if (!cpColonias.ContainsKey(cp))
                 {
-                    // Si el código postal no está en el diccionario, agregarlo con una lista vacía de colonias
+                    // Si el código postal no está en el diccionario,
+                    // agregarlo con una lista vacía de colonias
                     cpColonias.Add(cp, new List<string>());
                 }
 
@@ -96,10 +91,7 @@ namespace proyecto_CuartoSemestre.Jerarquia
                 foreach (TreeNode node in treeView1.Nodes)
                 {
                     if (node.Text == estado)
-                    {
-                        estadoNode = node;
-                        break;
-                    }
+                    { estadoNode = node; break; }
                 }
                 if (estadoNode == null)
                 {
@@ -113,14 +105,12 @@ namespace proyecto_CuartoSemestre.Jerarquia
                 foreach (TreeNode node in estadoNode.Nodes)
                 {
                     if (node.Text == ciudad)
-                    {
-                        ciudadNode = node;
-                        break;
-                    }
+                    { ciudadNode = node;  break; }
                 }
                 if (ciudadNode == null)
                 {
-                    // Si la ciudad no está en el árbol, agregarla como nodo secundario del estado
+                    // Si la ciudad no está en el árbol,
+                    // agregarla como nodo secundario del estado
                     ciudadNode = new TreeNode(ciudad);
                     estadoNode.Nodes.Add(ciudadNode);
                 }
@@ -130,14 +120,12 @@ namespace proyecto_CuartoSemestre.Jerarquia
                 foreach (TreeNode node in ciudadNode.Nodes)
                 {
                     if (node.Text == cp)
-                    {
-                        cpNode = node;
-                        break;
-                    }
+                    { cpNode = node; break; }
                 }
                 if (cpNode == null)
                 {
-                    // Si el código postal no está en el árbol, agregarlo como nodo secundario de la ciudad
+                    // Si el código postal no está en el árbol,
+                    // agregarlo como nodo secundario de la ciudad
                     cpNode = new TreeNode(cp);
                     ciudadNode.Nodes.Add(cpNode);
                 }
@@ -147,14 +135,12 @@ namespace proyecto_CuartoSemestre.Jerarquia
                 foreach (TreeNode node in cpNode.Nodes)
                 {
                     if (node.Text == colonia)
-                    {
-                        coloniaNode = node;
-                        break;
-                    }
+                    { coloniaNode = node; break; }
                 }
                 if (coloniaNode == null)
                 {
-                    // Si la colonia no está en el árbol, agregarla como nodo secundario del código postal
+                    // Si la colonia no está en el árbol, agregarla
+                    // como nodo secundario del código postal
                     coloniaNode = new TreeNode(colonia);
                     cpNode.Nodes.Add(coloniaNode);
                 }
