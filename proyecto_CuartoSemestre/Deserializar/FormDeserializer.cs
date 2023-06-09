@@ -23,18 +23,25 @@ namespace proyecto_CuartoSemestre.Deserializar
             Serie serie = response.seriesResponse.series[0];
             lbSerie.Text = "Serie: " + serie.Title;
             StreamWriter sw = new StreamWriter("StreamReader.txt");
-            
+
+
+            double[,] datosGrafica = new double[2, serie.Data.GetLength(0)];
             if(serie.Data == null)
             {
                 MessageBox.Show("Elija otra fecha por favor, o una fecha mas extensa");
                 return;
             }
+            int i = 0;
             foreach (DataSerie dataSerie in serie.Data)
             {
                 if (dataSerie.Data.Equals("N/E")) continue;
                 sw.WriteLine("Fecha: " + dataSerie.Date);
                 sw.WriteLine("Precio: " + dataSerie.Data);
+                //double precio = double.Parse(dataSerie.Data);
+                //DateTime fecha = DateTime.Parse(dataSerie.Date);
+                chart1.Series[0].Points.AddXY(dataSerie.Date, dataSerie.Data);
             }
+            
             sw.Close();
             Process blocDeNOtas = Process.Start("StreamReader.txt");
             blocDeNOtas.WaitForExit();

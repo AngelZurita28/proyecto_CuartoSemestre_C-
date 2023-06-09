@@ -37,17 +37,13 @@ namespace proyecto_CuartoSemestre
 
             Array cabecera = datos[0];
             for (int i = 0; i < cabecera.Length; i++)
-            {
-                //MessageBox.Show(cabecera.GetValue(i).ToString());
-                lstvDatos.Columns.Add(cabecera.GetValue(i).ToString());
-            }
+            { lstvDatos.Columns.Add(cabecera.GetValue(i).ToString()); }
+
             for (int i = 1; i < datos.Length; i++)
             {
                 ListViewItem item = new ListViewItem(datos[i].GetValue(0).ToString());
                 for (int j = 1; j < datos[i].Length; j++)
-                {
-                    item.SubItems.Add(datos[i].GetValue(j).ToString());
-                }
+                { item.SubItems.Add(datos[i].GetValue(j).ToString()); }
                 lstvDatos.Items.Add(item);
             }
         }
@@ -55,13 +51,12 @@ namespace proyecto_CuartoSemestre
         private void btnGuardar_Click(object sender, EventArgs e)
         {
             SaveFileDialog sfd = new SaveFileDialog();
-            sfd.Filter = "Comma Separated Values | *.csv | Texto | *.txt | Excel | *.xlsx";
+            sfd.Filter = "Comma Separated Values | *.csv | Texto | *.txt";
 
             if (sfd.ShowDialog() != DialogResult.OK)
             { return; }
 
             StreamWriter sw = new StreamWriter(sfd.FileName);
-
             foreach (ListViewItem item in lstvDatos.Items)
             {
                 int i = 1;
@@ -145,7 +140,6 @@ namespace proyecto_CuartoSemestre
             if (sfd.FileName != "")
             {
                 SpreadsheetDocument document = SpreadsheetDocument.Create(sfd.FileName, SpreadsheetDocumentType.Workbook);
-                // Agregar una hoja de trabajo
                 WorkbookPart workbookPart = document.AddWorkbookPart();
                 workbookPart.Workbook = new Workbook();
                 WorksheetPart worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
@@ -154,53 +148,41 @@ namespace proyecto_CuartoSemestre
                 Sheet sheet = new Sheet() { Id = workbookPart.GetIdOfPart(worksheetPart), SheetId = 1, Name = "ListView" };
                 sheets.Append(sheet);
 
-                // Obtener la colección de celdas
                 SheetData sheetData = worksheetPart.Worksheet.GetFirstChild<SheetData>();
 
-                // Recorrer las columnas y filas de la ListView
                 for (int i = 0; i < lstvDatos.Columns.Count; i++)
                 {
-                    // Crear una fila para los encabezados
                     if (i == 0)
                     {
                         Row row = new Row() { RowIndex = 1 };
                         sheetData.Append(row);
                     }
-                    // Obtener el encabezado de la columna
                     string headerText = lstvDatos.Columns[i].Text;
-                    // Crear una celda para el encabezado
                     Cell headerCell = new Cell();
                     headerCell.CellReference = GetColumnName(i + 1) + "1";
                     headerCell.DataType = CellValues.String;
                     headerCell.CellValue = new CellValue(headerText);
 
-                    // Agregar la celda al final de la fila
                     Row headerRow = (Row)sheetData.ChildElements.GetItem(0);
                     headerRow.AppendChild(headerCell);
 
-                    // Recorrer las filas de la columna
                     for (int j = 0; j < lstvDatos.Items.Count; j++)
                     {
-                        // Crear una fila para los datos
                         if (i == 0)
                         {
                             Row row = new Row() { RowIndex = (uint)(j + 2) };
                             sheetData.Append(row);
                         }
-                        // Obtener el valor del dato
                         string dataText = lstvDatos.Items[j].SubItems[i].Text;
-                        // Crear una celda para el dato
                         Cell dataCell = new Cell();
                         dataCell.CellReference = GetColumnName(i + 1) + (j + 2);
                         dataCell.DataType = CellValues.String;
                         dataCell.CellValue = new CellValue(dataText);
 
-                        // Agregar la celda al final de la fila
                         Row dataRow = (Row)sheetData.ChildElements.GetItem(j + 1);
                         dataRow.AppendChild(dataCell);
                     }
                 }
-                // Guardar y cerrar el documento
                 workbookPart.Workbook.Save();
                 document.Dispose();
                 MessageBox.Show("Done");
@@ -237,25 +219,15 @@ namespace proyecto_CuartoSemestre
 
             wordApp.Visible = true;
             Word.Document document = wordApp.Documents.Add();
-
-            // Obtener la referencia a la ListView
-
-            // Exportar los encabezados de columna
             Word.Table table = document.Tables.Add(document.Range(), lstvDatos.Items.Count + 1, lstvDatos.Columns.Count);
-            table.Borders.Enable = 1; // Agregar bordes a la tabla
+            table.Borders.Enable = 1;
 
             for (int columna = 0; columna < lstvDatos.Columns.Count; columna++)
-            {
-                table.Cell(1, columna + 1).Range.Text = lstvDatos.Columns[columna].Text;
-            }
-
-            // Exportar los datos de la ListView
+            { table.Cell(1, columna + 1).Range.Text = lstvDatos.Columns[columna].Text; }
             for (int fila = 0; fila < lstvDatos.Items.Count; fila++)
             {
                 for (int columna = 0; columna < lstvDatos.Columns.Count; columna++)
-                {
-                    table.Cell(fila + 2, columna + 1).Range.Text = lstvDatos.Items[fila].SubItems[columna].Text;
-                }
+                { table.Cell(fila + 2, columna + 1).Range.Text = lstvDatos.Items[fila].SubItems[columna].Text; }
             }
 
             document.SaveAs(sfd.FileName);
@@ -275,33 +247,25 @@ namespace proyecto_CuartoSemestre
             if (sfd.ShowDialog() != DialogResult.OK)
             { return; }
 
-            // Crear un documento PDF
             Document document = new Document();
             PdfWriter writer = PdfWriter.GetInstance(document, new FileStream(sfd.FileName, FileMode.Create)); ;
             document.Open();
 
-            // Crear la tabla
             PdfPTable table = new PdfPTable(lstvDatos.Columns.Count);
             table.WidthPercentage = 100;
 
-            // Agregar los encabezados de columna
             for (int i = 0; i < lstvDatos.Columns.Count; i++)
             {
                 PdfPCell cell = new PdfPCell(new Phrase(lstvDatos.Columns[i].Text));
                 cell.BackgroundColor = BaseColor.LIGHT_GRAY;
                 table.AddCell(cell);
             }
-
-            // Agregar los datos de la ListView
             for (int fila = 0; fila < lstvDatos.Items.Count; fila++)
             {
                 for (int columna = 0; columna < lstvDatos.Columns.Count; columna++)
-                {
-                    table.AddCell(lstvDatos.Items[fila].SubItems[columna].Text);
-                }
+                { table.AddCell(lstvDatos.Items[fila].SubItems[columna].Text); }
             }
 
-            // Agregar la tabla al documento
             document.Add(table);
             document.Close();
 
